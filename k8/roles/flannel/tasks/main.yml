@@ -1,0 +1,21 @@
+# install flannel
+- name: install flannel
+  yum:
+    name: flannel
+    state: latest
+
+# input config
+- name: input flannel config file
+  template: src=roles/flannel/templates/flanneld dest=/etc/sysconfig/flanneld
+
+# chose a node
+- set_fact: etcd_controller={{ groups['etcd'][0] }}
+
+# set flannel info on etcd
+- name: set flannel info to etcd
+  shell: "/usr/bin/etcdctl set /coreos.com/network/config   \'{ \"Network\":\"{{ flannel_network }}\", \"SubnetLen\": 24 , \"Backend\": { \"Type\": \"vxlan\" } }\' "
+  delegate_to: "{{ etcd_controller }}"
+
+# restart flanneld
+- name: restart flanneld
+  service: name=flanneld state=restarted enabled=yes

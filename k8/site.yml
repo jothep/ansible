@@ -1,0 +1,44 @@
+---
+## set all the hosts with common setting.
+- hosts: all
+  roles:
+  - common
+
+  tags:
+  - common
+  
+## install etcd single or cluster
+# should make a choice of single or multy
+- hosts: etcd
+  roles:
+  - etcd
+  tags:
+  - etcd
+  vars_files:
+    - group_vars/etcd_cluster.yml
+  
+## install flannel on every docker node
+- hosts: dockers
+  roles:
+  - flannel
+  tags:
+  - flannel
+  vars_files:
+    - group_vars/flannel.yml
+  
+# install docker on every docker node
+- hosts: dockers
+  roles:
+  - docker
+  tags:
+  - docker
+
+# install k8smaster
+- hosts: k8smaster
+  roles:
+  - k8smaster
+  tags:
+  - k8smaster
+  vars_files:
+    - group_vars/k8smaster.yml
+    - group_vars/etcd_cluster.yml

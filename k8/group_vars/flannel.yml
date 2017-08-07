@@ -1,0 +1,5 @@
+flannel_network: 10.236.0.0/16
+
+flannel_etcd_endpoints: http://172.16.7.58:2379,http://172.16.7.59:2379
+
+flannel_etcd_prefix: /coreos.com/network/

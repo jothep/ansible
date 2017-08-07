@@ -1,0 +1,38 @@
+
+
+# install docker
+- name: install docker
+  yum:
+    name: docker
+    state: latest
+
+- name: stop docker
+  service: name=docker state=stopped 
+  
+- name: remove docker service file
+  file: path=/usr/lib/systemd/system/docker.service state=absent
+
+# check if flannel config file exist
+- name: check flannel config file
+  stat: path=/run/flannel/docker
+  register: p
+
+- assert:
+    that:
+      - p.stat.exists
+
+# input conf
+- name: input config file
+  template: src=roles/docker/templates/docker.service dest=/usr/lib/systemd/system/docker.service
+
+- name: Check if docker0 exists
+  command: "/usr/sbin/ifconfig docker0"
+  register: docker0_state
+  failed_when: docker0_state.rc not in (0,1)
+
+- name: Configure flanneld to remove default Docker bridge
+  shell: "/usr/sbin/ifconfig docker0 down && /usr/sbin/brctl  delbr docker0"
+  when: docker0_state.rc == 0
+
+- name: restart docker
+  service: name=docker state=restarted enabled=yes   

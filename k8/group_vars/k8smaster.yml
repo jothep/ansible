@@ -1,0 +1,9 @@
+
+k8s_local: http://127.0.0.1:8080
+kubelet_staticpod: --pod-manifest-path=/etc/kubernetes/manifests 
+kubelet_priv: --allow-privileged=true
+
+service_cluster_ip_range: 10.96.0.0/12
+etcd_servers: http://172.16.7.39:2379,http://172.16.7.40:2379,http://172.16.7.55:2379
+k8s_image: gcr.io/google_containers/hyperkube:v1.5.7
+k8s_master: http://172.16.7.58:8080

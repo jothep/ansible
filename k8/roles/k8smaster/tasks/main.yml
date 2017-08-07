@@ -1,0 +1,54 @@
+# load k8smaster image
+- name: cp docker image
+  copy: src=roles/k8smaster/files/hyper157.tar dest=/root/hyper157.tar
+- copy: src=roles/k8smaster/files/pause3.tar dest=/root/pause3.tar
+- name: load image
+  shell: "docker load </root/hyper157.tar"
+- shell: "docker load </root/pause3.tar"
+
+# install kubernetes-node for kubelet
+- name: install kubernetes-node
+  yum:
+    name: kubernetes-node
+    state: latest
+
+# replace for k8s ver 1.5.7
+- name: remove k8s bin file
+  file: path=/usr/bin/hyperkube state=absent
+- file: path=/usr/bin/kubectl state=absent
+- file: path=/usr/bin/kubelet state=absent
+- file: path=/usr/bin/kube-proxy state=absent
+
+- name: add hyperkube v1.5.7
+  copy: src=hyperkube dest=/usr/bin/hyperkube mode=0755
+- copy: src=kubectl dest=/usr/bin/kubectl mode=0755
+
+# replace kubelet and proxy service
+- name: replace kubelet config file
+  copy: src=roles/k8smaster/files/kubelet.service dest=/usr/lib/systemd/system/kubelet.service
+- copy: src=roles/k8smaster/files/kube-proxy.service dest=/usr/lib/systemd/system/kube-proxy.service
+
+# set kubelet
+- file: path=/etc/kubernetes/config state=absent
+- file: path=/etc/kubernetes/manifests state=directory
+- template: src=roles/k8smaster/templates/kubelet dest=/etc/kubernetes/kubelet
+
+# create k8s master scripts
+- template: src=roles/k8smaster/templates/api.yml dest=/etc/kubernetes/manifests/api.yml
+- template: src=roles/k8smaster/templates/cm.yml dest=/etc/kubernetes/manifests/cm.yml
+- template: src=roles/k8smaster/templates/sch.yml dest=/etc/kubernetes/manifests/sch.yml
+
+# create log folder
+- file: path=/var/log/kubernetes state=directory owner=kube group=kube mode=0755
+
+# start kubelet 
+- name: start kubelet
+  service: name=kubelet state=restarted enabled=yes
+
+# check k8s master api
+- name: wait 10s get api
+  wait_for: 
+    port: 8080 
+    delay: 10
+- debug:
+    msg: "api started."

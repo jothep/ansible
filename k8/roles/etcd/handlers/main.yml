@@ -1,0 +1,4 @@
+---
+# handlers for etcd
+- name: restart etcd
+  service: name=etcd state=restarted enabled=yes

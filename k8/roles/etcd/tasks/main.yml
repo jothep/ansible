@@ -1,0 +1,22 @@
+# stop old etcd
+- name: stop etcd
+  service: name=etcd state=stopped
+
+# remove old etcd folder
+- name: remove etcd folder
+  file: path=/var/lib/etcd/default.etcd state=absent
+
+# remove old etcd setfile
+- name: remove etcd setfile
+  file: path=/etc/etcd/etcd.conf state=absent
+
+# install etcd
+- name: install etcd
+  yum:
+    name: etcd
+    state: latest
+
+# input conf
+- name: input config file
+  template: src=roles/etcd/templates/etcd.conf dest=/etc/etcd/etcd.conf
+  notify: restart etcd

@@ -1,0 +1,5 @@
+[etcd]
+172.16.7.59 etcd_setname=etcd
+
+[dockers]
+172.16.7.59

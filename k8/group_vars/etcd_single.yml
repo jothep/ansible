@@ -1,0 +1,17 @@
+---
+# etcd name
+etcd_name: etcd
+
+# etcd data path
+etcd_data_dir: /var/lib/etcd/default.etcd 
+
+# etcd install on this host
+etcd_host: 172.16.7.59 
+
+# etcd advertise client urls
+etcd_adv_cli_urls: http://0.0.0.0:2379
+
+etcd_adv_peer_urls:
+etcd_cluster:
+etcd_cluster_state:
+etcd_cluster_name:

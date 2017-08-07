@@ -1,0 +1,15 @@
+- 
+  hosts: localhost
+  roles:
+  - test
+  tags:
+  - test
+  vars_files:
+    - group_vars/testvar.yml
+
+- hosts: two
+  roles:
+  - test2
+  tags:
+  - test2
+
