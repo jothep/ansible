@@ -8,14 +8,46 @@
 - name: input flannel config file
   template: src=roles/flannel/templates/flanneld dest=/etc/sysconfig/flanneld
 
-# chose a node
-- set_fact: etcd_controller={{ groups['etcd'][0] }}
+# update flannel bin
+- name: check if flanneld
+  shell: "flanneld --version"
+  register: flannel_version
 
-# set flannel info on etcd
+- name: update flannel bin
+  copy: src=file/flanneld dest=/usr/bin/flanneld
+  when: flannel_version.stdout != '0.9.0' 
+
+- name: create path
+  file: path=/opt/ssl/ state=directory mode=0755
+- file: path=/opt/ssl/etcd state=directory mode=0755
+
+- name: check if etcd certs
+  stat: path=/opt/ssl/etcd/{{ item }}
+  with_items:
+    - { src: /opt/certs/ca.pem }
+    - { src: /opt/certs/kubernetes.pem }
+    - { src: /opt/certs/kubernetes-key.pem }
+  register: certs
+ 
+- copy: src={{ item.src }} dest=/opt/ssl/etcd/ mode=0644 
+  with_items:
+    - { src: /opt/certs/ca.pem }
+    - { src: /opt/certs/kubernetes.pem }
+    - { src: /opt/certs/kubernetes-key.pem }
+  when: (certs.results[0].stat.exists == false) or (certs.results[1].stat.exists == false) or (certs.results[2].stat.exists == false)
+
+#dis check if flannel set on etcd, beacuse if error, register can't set
+- name: check if flannel set on etcd
+  command: etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem get /coreos.com/network/config
+  register: flannel_setting
+  run_once: true
+  ignore_errors: true
+
 - name: set flannel info to etcd
-  shell: "/usr/bin/etcdctl set /coreos.com/network/config   \'{ \"Network\":\"{{ flannel_network }}\", \"SubnetLen\": 24 , \"Backend\": { \"Type\": \"vxlan\" } }\' "
-  delegate_to: "{{ etcd_controller }}"
+  shell: "/usr/bin/etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem set /coreos.com/network/config   \'{ \"Network\":\"{{ flannel_network }}\", \"SubnetLen\": 24 , \"Backend\": { \"Type\": \"vxlan\" } }\' "
+  delegate_to: "{{ groups['etcd'][0] }}"
+  when: (flannel_setting|failed) or (flannel_setting.stdout.find(flannel_network) != -1)
+  run_once: true
 
-# restart flanneld
-- name: restart flanneld
-  service: name=flanneld state=restarted enabled=yes
+- name: start flanneld
+  systemd: name=flanneld state=started daemon_reload=yes enabled=yes

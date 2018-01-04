@@ -1,13 +1,20 @@
 ---
 ## set all the hosts with common setting.
-- hosts: all
-  roles:
-  - common
-
-  tags:
-  - common
+#- hosts: all
+#  roles:
+#  - common
+#  tags:
+#  - common
   
-## install etcd single or cluster
+# make certs
+- hosts: build
+  roles:
+  - certs
+  tags:
+  - certs
+  vars_files:
+    - group_vars/all.yml
+
 # should make a choice of single or multy
 - hosts: etcd
   roles:
@@ -15,19 +22,19 @@
   tags:
   - etcd
   vars_files:
-    - group_vars/etcd_cluster.yml
+    - group_vars/all.yml
   
 ## install flannel on every docker node
-- hosts: dockers
+- hosts: k8smaster
   roles:
   - flannel
   tags:
   - flannel
   vars_files:
-    - group_vars/flannel.yml
+    - group_vars/all.yml
   
 # install docker on every docker node
-- hosts: dockers
+- hosts: k8smaster
   roles:
   - docker
   tags:
@@ -36,9 +43,8 @@
 # install k8smaster
 - hosts: k8smaster
   roles:
-  - k8smaster
+  - kube179master
   tags:
-  - k8smaster
+  - kube179master
   vars_files:
-    - group_vars/k8smaster.yml
-    - group_vars/etcd_cluster.yml
+    - group_vars/all.yml

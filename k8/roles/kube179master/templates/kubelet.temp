@@ -1,0 +1,7 @@
+KUBE_LOGTOSTDERR="--logtostderr=true"
+KUBE_LOG_LEVEL="--v=4"
+NODE_ADDRESS="--address=0.0.0.0"
+NODE_HOSTNAME="--hostname-override="
+KUBE_ALLOW_PRIV="--allow-privileged=true"
+KUBE_INFRA_CONTAINER="--pod-infra-container-image={{ pause3 }}"
+KUBELET_SYSTEM_PODS_ARGS="--pod-manifest-path=/etc/kubernetes/manifests"

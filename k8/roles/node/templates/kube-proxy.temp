@@ -1,0 +1,4 @@
+KUBE_LOGTOSTDERR=""
+KUBE_LOG_LEVEL=""
+KUBE_MASTER= "--master={{ k8s_master }}"
+KUBE_CONFIG= "--kubeconfig={{ kubeconfig }}"

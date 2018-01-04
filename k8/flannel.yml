@@ -1,0 +1,8 @@
+## install flannel on every docker node
+- hosts: etcd
+  roles:
+  - flannel
+  tags:
+  - flannel
+  vars_files:
+    - group_vars/all.yml

@@ -1,0 +1,68 @@
+#  hosts
+#- name: hosts
+#  lineinfile:
+#    path: /etc/hosts
+#    regexp: '*dockerhub\.xinzhentech\.com'
+#    line: '10.10.10.128  dockerhub.xinzhentech.com'
+
+
+- name: cp certs
+  copy: src=/opt/ssl/kubernetes dest=/opt/ssl/
+- copy: src=/opt/ssl/node/node.pem dest=/opt/ssl/kubernetes
+- copy: src=/opt/ssl/node/node-key.pem dest=/opt/ssl/kubernetes
+- copy: src=/opt/ssl/node/nodeconfig dest=/opt/ssl/kubernetes
+
+- name: cp bin
+  copy: src=/opt/kubelet dest=/usr/bin/kubelet
+- copy: src=/opt/kube-proxy dest=/usr/bin/kube-proxy
+- copy: src=/opt/kubectl dest=/usr/bin/kubectl
+
+- name: let bin x
+  shell: " chmod +x /usr/bin/kubelet"
+- shell: " chmod +x /usr/bin/kube-proxy"
+- shell: " chmod +x /usr/bin/kubectl"
+
+# install socat
+- name: install socat
+  yum:
+    name: socat
+    state: latest
+
+- name: set path
+  file: path=/etc/kubernetes/ state=directory
+
+- name: rm service file
+  file: path=/usr/lib/systemd/system/kubelet.service state=absent
+- file: path=/etc/systemd/system/kubelet.service state=absent
+# set kubelet service
+- template: src=roles/node/templates/kubelet.service dest=/usr/lib/systemd/system/kubelet.service
+- template: src=roles/node/templates/kubelet.temp dest=/etc/kubernetes/kubelet
+- template: src=roles/node/templates/kube-proxy.service dest=/usr/lib/systemd/system/kube-proxy.service
+- template: src=roles/node/templates/kube-proxy.temp dest=/etc/kubernetes/kube-proxy
+
+# load k8smaster image
+- name: cp docker image
+  copy: src=roles/k8smaster/files/pause3.tar dest=/root/pause3.tar
+
+- name: load image
+  shell: "docker load </root/pause3.tar"
+
+# create log folder
+#- file: path=/var/log/kubernetes state=directory owner=kube group=kube mode=0755
+
+- name: daemon reload
+  shell: "systemctl daemon-reload"
+
+# start kubelet 
+- name: start kubelet
+  service: name=kubelet state=restarted enabled=yes
+- service: name=kube-proxy state=restarted enabled=yes
+
+
+
+
+#- name: restart serv
+#  shell: "systemctl daemon-reload"
+#- service: name=docker state=restarted
+#- service: name=kubelet state=restarted
+

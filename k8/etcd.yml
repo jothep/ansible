@@ -1,0 +1,9 @@
+## install etcd single or cluster
+# should make a choice of single or multy
+- hosts: etcd
+  roles:
+  - etcd
+  tags:
+  - etcd
+  vars_files:
+    - group_vars/etcd_cluster_tsl.yml

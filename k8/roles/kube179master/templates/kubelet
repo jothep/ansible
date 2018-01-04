@@ -1,0 +1,7 @@
+KUBELET_ADDRESS="--address=0.0.0.0"
+KUBELET_HOSTNAME="--hostname-override={{ ansible_hostname }}"
+KUBELET_API_SERVER="--api-servers={{ k8s_api }}"
+
+# Add your own!
+#KUBELET_ARGS="--pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true"
+KUBELET_ARGS="{{ kubelet_staticpod }} {{ kubelet_priv }} "

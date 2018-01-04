@@ -1,0 +1,101 @@
+#  hosts
+#- name: hosts
+#  lineinfile:
+#    path: /etc/hosts
+#    regexp: '*dockerhub\.xinzhentech\.com'
+#    line: '10.10.10.128  dockerhub.xinzhentech.com'
+
+- name: check if kubelet
+  stat: path=/usr/bin/kubelet
+  register: kubelet
+
+# cp rpm
+- name: cp rpm
+  copy: src=file/rpm/{{ item.src }} dest=/opt/
+  with_items:
+    - { src: kubelet.rpm }
+    - { src: kubernetes-cni.rpm }
+    - { src: kubectl.rpm }
+  when: kubelet.stat.exists == false
+
+# install package
+- name: yum install socat
+  yum: name=socat state=installed
+
+- name: install rpm
+  yum:
+    name={{ item }} state=present
+  with_items:
+    - /opt/kubelet.rpm 
+    - /opt/kubernetes-cni.rpm 
+    - /opt/kubectl.rpm 
+
+- file: path=/etc/systemd/system/kubelet.service state=absent
+- service: name=kubelet state=stopped
+
+- file: path=/opt/ssl/kubernetes state=directory mode=0755
+
+- name: check if k8s certs
+  stat: path=/opt/ssl/kubernetes/{{ item.src }}
+  with_items:
+    - { src: ca.pem }
+    - { src: ca-key.pem }
+    - { src: kubernetes.pem }
+    - { src: kubernetes-key.pem }
+    - { src: kubeconfig }
+  register: k8scerts
+
+- name: copy certs to kubernetes
+  copy: src={{ item.src }} dest=/opt/ssl/kubernetes/
+  with_items:
+    - { src: /opt/certs/ca.pem }
+    - { src: /opt/certs/ca-key.pem }
+    - { src: /opt/certs/kubernetes.pem }
+    - { src: /opt/certs/kubernetes-key.pem }
+    - { src: /opt/certs/kubeconfig }
+  when: (k8scerts.results[0].stat.exists == false) or (k8scerts.results[1].stat.exists == false) or (k8scerts.results[2].stat.exists == false) or (k8scerts.results[3].stat.exists == false) or (k8scerts.results[4].stat.exists == false)
+
+- name: make folder
+  file: path=/etc/kubernetes/manifests state=directory
+
+# set kubelet service
+- template: src=roles/kube179master/templates/kubelet.service dest=/usr/lib/systemd/system/kubelet.service
+- template: src=roles/kube179master/templates/kubelet.temp dest=/etc/kubernetes/kubelet
+
+# load k8smaster image
+- name: cp docker image
+  copy: src=roles/k8smaster/files/pause3.tar dest=/root/pause3.tar
+
+#- name: load image
+- shell: "docker load </root/pause3.tar"
+- shell: "docker tag gcr.io/google_containers/pause-amd64:3.0 dockerhub.xinzhentech.com/pause-amd64:3.0"
+
+# create log folder
+#- file: path=/var/log/kubernetes state=directory owner=kube group=kube mode=0755
+
+- name: start kubelet
+  systemd: name=kubelet state=started daemon_reload=yes enabled=yes
+
+- copy: src=file/config.json dest=/root/.docker
+
+- name: download images
+  shell: "docker pull dockerhub.xinzhentech.com/kube-apiserver:v1.7.9"
+- shell: "docker pull dockerhub.xinzhentech.com/kube-controller-manager:v1.7.9"
+- shell: "docker pull dockerhub.xinzhentech.com/kube-scheduler:v1.7.9"
+
+- template: src=roles/kube179master/templates/api.temp dest=/etc/kubernetes/manifests/api.yml
+- template: src=roles/kube179master/templates/cm.temp dest=/etc/kubernetes/manifests/cm.yml
+- template: src=roles/kube179master/templates/sch.temp dest=/etc/kubernetes/manifests/sch.yml
+
+#- name: restart serv
+#  shell: "systemctl daemon-reload"
+#- service: name=docker state=restarted
+#- service: name=kubelet state=restarted
+
+# check k8s master api
+#- name: wait 10s get api
+#  wait_for: 
+#    port: 8080 
+#    delay: 10
+#- debug:
+#    msg: "api started."

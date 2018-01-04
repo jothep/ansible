@@ -1,0 +1,6 @@
+# install docker on every docker node
+- hosts: etcd
+  roles:
+  - docker
+  tags:
+  - docker

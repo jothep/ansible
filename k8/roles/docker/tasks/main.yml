@@ -1,16 +1,24 @@
 
+- name: docker repo
+  copy: src=roles/docker/templates/docker-ce.repo dest=/etc/yum.repos.d/
 
-# install docker
-- name: install docker
-  yum:
-    name: docker
-    state: latest
+- name: clean repo
+  command: yum clean all
+  args:
+    warn: no
+
+# install package
+- name: yum install docker
+  yum: name={{ item }} state=installed
+  with_items:
+    - yum-utils 
+    - bridge-utils 
+    - device-mapper-persistent-data 
+    - lvm2 
+    - docker-ce 
 
 - name: stop docker
   service: name=docker state=stopped 
-  
-- name: remove docker service file
-  file: path=/usr/lib/systemd/system/docker.service state=absent
 
 # check if flannel config file exist
 - name: check flannel config file
@@ -34,5 +42,5 @@
   shell: "/usr/sbin/ifconfig docker0 down && /usr/sbin/brctl  delbr docker0"
   when: docker0_state.rc == 0
 
-- name: restart docker
-  service: name=docker state=restarted enabled=yes   
+- name: start docker
+  systemd: name=docker state=started daemon_reload=yes enabled=yes

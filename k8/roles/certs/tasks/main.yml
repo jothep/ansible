@@ -1,0 +1,49 @@
+# check if certs'path then create
+- name: certs'path
+  stat: path=/opt/certs
+  register: certs-path
+
+- file: path=/opt/certs state=directory owner=root group=root mode=0644
+
+- name: cfssl
+  copy: src=file/{{ item.src }} dest=/usr/local/bin/ owner=root group=root mode=0755
+  with_items:
+    - { src: 'cfssl' }
+    - { src: 'cfssljson' }
+
+- name: copy sh and json if not exist
+  copy: src={{ item }} dest=/opt/certs/ 
+  with_fileglob:
+    - file/*.sh
+- copy: src={{ item }} dest=/opt/certs/ mode=0644
+  with_fileglob:
+    - file/*.json
+
+- name: check if ca
+  stat: path=/opt/certs/{{ item.src }} 
+  with_items:
+    - { src: ca.pem }
+    - { src: ca-key.pem }
+  register: ca
+
+- shell: bash -c "/opt/certs/1createca.sh"
+  when: (ca.results[0].stat.exists == false) or (ca.results[1].stat.exists == false)
+
+- name: check if kubernetes certs
+  stat: path=/opt/certs/{{ item.src }}
+  with_items:
+    - { src: kubernetes.pem }
+    - { src: kubernetes-key.pem }
+  register: kubernetes
+
+- template: src=roles/certs/templates/3create-api-cert.sh dest=/opt/certs/3create-api-cert.sh
+- shell: bash -c "/opt/certs/3create-api-cert.sh"
+  when: (kubernetes.results[0].stat.exists == false) or (kubernetes.results[1].stat.exists == false)
+
+- name: check ifkubeconfig
+  stat: path=/opt/certs/kubeconfig
+  register: kubeconfig
+
+- template: src=roles/certs/templates/4create-kubeconfig.sh dest=/opt/certs/4create-kubeconfig.sh
+- shell: bash -c "/opt/certs/4create-kubeconfig.sh"
+  when: (kubeconfig.stat.exists == false)

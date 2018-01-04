@@ -1,0 +1,72 @@
+#- name: check if flannel set on etcd
+#  shell: "etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem get /coreos.com/network/config"
+#  delegate_to: "{{ groups['etcd'][0] }}"
+#  run_once: true
+#  register: flannel_setting
+
+#- debug:
+#    msg: "{{ flannel_setting.stdout.find('{{ flannel_network }}') }}"
+#  run_once: true
+
+#- shell: echo "{{ flannel_network }} dxd {{ flannel_network }}" 
+#  register: ab
+#  run_once: true
+
+#- shell: echo 'abcd'
+#  register:  ms
+#  run_once: true
+
+#- debug:
+#    msg: "{{ ab }} already exists"
+#  when: ab.stdout.find(flannel_network) != -1 
+#  run_once: true
+
+- name: check if flannel set on etcd
+  shell: "etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem get /coreos.com/network/config"
+  register: flannel_setting
+  run_once: true
+
+#- debug:
+#    msg: "{{ flannel_setting.stdout }}"
+
+#- debug:
+#    msg: "{{ flannel_network }}"
+
+#- name: set flannel info to etcd
+#  shell: "/usr/bin/etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem set /coreos.com/network/config   \'{ \"Network\":\"{{ flannel_network }}\", \"SubnetLen\": 24 , \"Backend\": { \"Type\": \"vxlan\" } }\' "
+#  delegate_to: "{{ groups['etcd'][0] }}"
+#  when: flannel_setting.stdout.find("{{ flannel_network }}") != -1
+#  run_once: true
+
+- shell: echo "check when"
+  delegate_to: "{{ groups['etcd'][0] }}"
+  when: flannel_setting.stdout.find(flannel_network) != -1 
+  run_once: true
+
+- stat: path=/usr/bin/kubelet
+  register: kubelet
+
+- debug:
+    msg: "no kubelet"
+  when: kubelet.stat.exists == false
+
+- name: check if etcd certs
+  stat: path=/opt/ssl/etcd/{{ item.src }}
+  with_items:
+    - { src: ca.pem }
+    - { src: kubernetes.pem }
+    - { src: kubernetes-key.pem }
+  register: certs
+
+- debug:
+    msg: "certs.stat.exists"
+  when: certs.results[0].stat.exists == True
+
+#- name: copy certs to etcd
+#  copy: src={{ item.src }} dest=/opt/ssl/etcd/ mode=0644 owner=etcd group=etcd
+#  with_items:
+#    - { src: /opt/certs/ca.pem }
+#    - { src: /opt/certs/ca-key.pem }
+#    - { src: /opt/certs/kubernetes.pem }
+#    - { src: /opt/certs/kubernetes-key.pem }
+#  when: (certs.results[0].stat.exists == false) or (certs.results[1].stat.exists == false) or (certs.results[2].stat.exists == false) (certs.results[3].stat.exists == false)

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: kube-scheduler
+    tier: control-plane
+  name: kube-scheduler
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - kube-scheduler
+    - --master={{ k8s_master }}
+    - --address=0.0.0.0
+    - --kubeconfig={{ kubeconfig }}
+    - --leader-elect=true
+    image: dockerhub.xinzhentech.com/kube-scheduler:v1.7.9
+    name: kube-scheduler
+    volumeMounts:
+    - mountPath: /ssl/etcd/
+      name: etcdcert
+      readOnly: true
+    - mountPath: /ssl/kubernetes/
+      name: k8scert
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /opt/ssl/kubernetes/
+    name: k8scert
+  - hostPath:
+      path: /opt/ssl/etcd/
+    name: etcdcert
+  hostNetwork: true

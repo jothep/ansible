@@ -1,14 +1,14 @@
-# stop old etcd
-- name: stop etcd
-  service: name=etcd state=stopped
+- name: folder exist
+  stat: path=/var/lib/etcd/default.etcd
+  register: etcd_folder_exist
+  
 
+- debug:
+    msg: "etcd renew setting is {{ if_etcd_refresh }}"
 # remove old etcd folder
 - name: remove etcd folder
   file: path=/var/lib/etcd/default.etcd state=absent
-
-# remove old etcd setfile
-- name: remove etcd setfile
-  file: path=/etc/etcd/etcd.conf state=absent
+  when: (etcd_folder_exist.stat.exists == true) and (if_etcd_refresh == true)
 
 # install etcd
 - name: install etcd
@@ -16,7 +16,51 @@
     name: etcd
     state: latest
 
-# input conf
-- name: input config file
-  template: src=roles/etcd/templates/etcd.conf dest=/etc/etcd/etcd.conf
-  notify: restart etcd
+# copy certs to folder
+- name: create path
+  file: path=/opt/ssl/ state=directory mode=0755
+- file: path=/opt/ssl/etcd state=directory mode=0755 owner=etcd group=etcd
+
+- name: check if etcd certs
+  stat: path=/opt/ssl/etcd/{{ item.src }}
+  with_items:
+    - { src: ca.pem }
+    - { src: ca-key.pem }
+    - { src: kubernetes.pem }
+    - { src: kubernetes-key.pem }
+  register: certs
+
+- name: copy certs to etcd
+  copy: src={{ item.src }} dest=/opt/ssl/etcd/ mode=0644 owner=etcd group=etcd
+  with_items:
+    - { src: /opt/certs/ca.pem }
+    - { src: /opt/certs/ca-key.pem }
+    - { src: /opt/certs/kubernetes.pem }
+    - { src: /opt/certs/kubernetes-key.pem }
+  when: (certs.results[0].stat.exists == false) or (certs.results[1].stat.exists == false) or (certs.results[2].stat.exists == false) or (certs.results[3].stat.exists == false)
+
+# etcd working path
+- name: etcd working path
+  file: path=/var/lib/etcd/default.etcd owner=etcd group=etcd mode=0755 state=directory
+
+- file: path=/etc/systemd/system/kubelet.service state=absent
+# input etcd service file with tsl
+- name: input service tsl file
+  template: src=roles/etcd/templates/etcd.service.tsl dest=/usr/lib/systemd/system/etcd.service
+  notify:
+    - start etcd
+
+- name: etcd folder
+  file: path=/etc/etcd/ state=directory
+# input conf with tsl
+- name: input config tsl file
+  template: src=roles/etcd/templates/etcd.conf.tsl dest=/etc/etcd/etcd.conf
+  notify:
+    - start etcd
+
+- name: systemd start etcd
+  systemd: name=etcd state=started enabled=yes daemon_reload=yes
+
+- name: check if etcd cluster health
+  shell: "etcdctl --ca-file=/opt/ssl/etcd/ca.pem --cert-file=/opt/ssl/etcd/kubernetes.pem --key-file=/opt/ssl/etcd/kubernetes-key.pem cluster-health"
+  delegate_to: "{{ groups['etcd'][0] }}"

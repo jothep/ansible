@@ -1,6 +1,0 @@
-- stat: path=/root/md.c
-  register: p
-
-- assert:
-    that:
-      - p.stat.exists

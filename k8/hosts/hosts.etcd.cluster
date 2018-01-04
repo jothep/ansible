@@ -1,0 +1,10 @@
+[etcd]
+10.0.15.34:12346 etcd_setname=etcd01
+10.0.15.35:12346 etcd_setname=etcd02
+10.0.15.36:12346 etcd_setname=etcd03
+
+[k8smaster]
+10.0.15.34:12346 etcd_setname=etcd01
+10.0.15.35:12346 etcd_setname=etcd02
+10.0.15.36:12346 etcd_setname=etcd03
+

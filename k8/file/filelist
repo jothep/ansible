@@ -1,0 +1,18 @@
+-rwxr-xr-x 1 root root      595 Dec 25 16:01 1createca.sh
+-rwxr-xr-x 1 root root      434 Dec 25 13:39 2create-admin-cert.sh
+-rwxr-xr-x 1 root root      813 Dec 25 13:39 5create-node-cert.sh
+-rwxr-xr-x 1 root root      555 Dec 25 13:39 6create-nodeconfig.sh
+-rwxr-xr-x 1 root root       95 Dec 25 13:39 7cp-nodecert.sh
+-rw-r--r-- 1 root root      233 Dec 25 14:31 admin-csr.json
+-rw-r--r-- 1 root root      232 Dec 25 14:31 ca-config.json
+-rw-r--r-- 1 root root      213 Dec 25 14:31 ca-csr.json
+-rwxr-xr-x 1 root root 10376657 Dec 25 11:04 cfssl
+-rwxr-xr-x 1 root root  6595195 Dec 25 11:04 cfssl-certinfo
+-rwxr-xr-x 1 root root  2277873 Dec 25 11:04 cfssljson
+-rw-r--r-- 1 root root      298 Dec 27 15:15 config.json
+-rwxr-xr-x 1 root root 34491768 Dec 26 15:40 flanneld
+-rwxr-xr-x 1 root root 72349934 Dec 25 18:26 kubectl
+-rw-r--r-- 1 root root      234 Dec 25 14:31 kubernetes-csr.json
+-rw-r--r-- 1 root root      234 Dec 25 14:31 node-csr.json
+drwxr-xr-x 2 root root     4096 Dec 27 11:43 rpm
+

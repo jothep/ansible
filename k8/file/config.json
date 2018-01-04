@@ -1,0 +1,13 @@
+{
+	"auths": {
+		"dockerhub.xinzhentech.com": {
+			"auth": "eGluemhlbnRlY2g6QDslUFZWYnhQODQ8Z3p2KXM+aXl0Y2ZjO1p9LFRU"
+		},
+		"registry.cn-shenzhen.aliyuncs.com": {
+			"auth": "aHVpcHVibGljOjh5YUxYeHljZDJYSlR3RHJGREFK"
+		}
+	},
+	"HttpHeaders": {
+		"User-Agent": "Docker-Client/17.09.0-ce (linux)"
+	}
+}

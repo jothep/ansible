@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: kube-controller-manager
+    tier: control-plane
+  name: kube-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - /hyperkube
+    - controller-manager
+    - --master={{ k8s_master }}
+    - --leader-elect=true
+    image: {{ k8s_image }}
+    name: kube-controller-manager
+    volumeMounts:
+    - name: vol
+      mountPath: /var/log/kubernetes
+  volumes:
+  - name: vol
+    hostPath:
+      path: /var/log/kubernetes
+  hostNetwork: true

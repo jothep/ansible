@@ -1,0 +1,25 @@
+## install flannel on every docker node
+- hosts: k8snode
+  roles:
+  - flannelnode
+  tags:
+  - flannelnode
+  vars_files:
+    - group_vars/flannel.yml
+
+# install docker on every docker node
+- hosts: k8snode
+  roles:
+  - docker
+  tags:
+  - docker
+
+
+# install k8snode
+- hosts: k8snode
+  roles:
+  - node
+  tags:
+  - node
+  vars_files:
+    - group_vars/node.yml

@@ -1,0 +1,9 @@
+# make certs
+- hosts: build
+  roles:
+  - certs
+  tags:
+  - certs
+  vars_files:
+    - group_vars/build.yml
+

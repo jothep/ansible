@@ -1,0 +1,28 @@
+[Unit]
+Description=Kubernetes Kubelet
+After=docker.service
+Requires=docker.service
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/kubelet
+ExecStart=/usr/bin/kubelet ${KUBE_LOGTOSTDERR} \
+                    ${KUBE_INFRA_CONTAINER} \
+                    ${KUBELET_SYSTEM_PODS_ARGS} \
+                    ${KUBE_LOG_LEVEL}       \
+                    ${NODE_ADDRESS}         \
+                    ${NODE_PORT}            \
+                    --kube-reserved cpu=300m,memory=500Mi \
+                    --system-reserved cpu=200m,memory=500Mi \
+                    --eviction-hard memory.available<500Mi,nodefs.available<10% \
+                    ${NODE_HOSTNAME}        \
+                    ${KUBELET_API_SERVER}   \
+                    ${KUBE_ALLOW_PRIV}      \
+                    ${KUBELET_DNS_IP}      \
+                    ${KUBELET_DNS_DOMAIN}      \
+                    ${KUBELET_ARGS}
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+

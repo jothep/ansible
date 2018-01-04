@@ -1,4 +1,4 @@
 ---
 # handlers for etcd
-- name: restart etcd
-  service: name=etcd state=restarted enabled=yes
+- name: start etcd
+  systemd: name=etcd state=started daemon_reload=yes enabled=yes

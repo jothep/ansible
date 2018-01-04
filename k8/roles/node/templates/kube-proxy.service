@@ -1,0 +1,14 @@
+[Unit]
+Description=Kubernetes Proxy
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/kubernetes/kube-proxy
+ExecStart=/usr/bin/kube-proxy     \
+                    ${KUBE_MASTER} \
+		    ${KUBE_CONFIG}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

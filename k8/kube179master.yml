@@ -1,0 +1,9 @@
+# install k8smaster179
+- hosts: k8smaster
+  roles:
+  - kube179master
+  tags:
+  - kube179master
+  vars_files:
+    - group_vars/kube179master.yml
+    - group_vars/etcd_cluster_tsl.yml

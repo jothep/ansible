@@ -1,0 +1,16 @@
+
+k8s_local: http://127.0.0.1:8080
+kubelet_staticpod: --pod-manifest-path=/etc/kubernetes/manifests 
+kubelet_priv: --allow-privileged=true
+
+pause3: dockerhub.xinzhentech.com/pause-amd64:3.0
+cluster_range: 10.231.0.0/16
+etcd_servers: https://10.100.100.198:2379,https://10.100.100.199:2379,https://10.100.100.200:2379
+k8s_master: https://10.100.100.197:6443
+etcd_ca: /ssl/etcd/ca.pem
+etcd_cert: /ssl/etcd/kubernetes.pem
+etcd_key: /ssl/etcd/kubernetes-key.pem
+k8s_ca: /ssl/kubernetes/ca.pem
+k8s_cert: /ssl/kubernetes/kubernetes.pem
+k8s_key: /ssl/kubernetes/kubernetes-key.pem
+kubeconfig: /ssl/kubernetes/kubeconfig

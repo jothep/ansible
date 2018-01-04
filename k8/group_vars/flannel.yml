@@ -1,5 +1,9 @@
-flannel_network: 10.236.0.0/16
+flannel_network: 172.33.0.0/16
 
-flannel_etcd_endpoints: http://172.16.7.58:2379,http://172.16.7.59:2379
+flannel_etcd_endpoints: https://10.100.100.198:2379,https://10.100.100.199:2379,https://10.100.100.200:2379
 
 flannel_etcd_prefix: /coreos.com/network/
+etcd_ca: /opt/ssl/etcd/ca.pem
+etcd_cert: /opt/ssl/etcd/kubernetes.pem
+etcd_key: /opt/ssl/etcd/kubernetes-key.pem
+tsl_pass: --cert-file /opt/ssl/etcd/kubernetes.pem --key-file /opt/ssl/etcd/kubernetes-key.pem --ca-file /opt/ssl/etcd/ca.pem

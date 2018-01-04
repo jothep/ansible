@@ -1,8 +1,0 @@
-# [member]
-ETCD_NAME={{ setvar }}
-ETCD_DATA_DIR="{{ etcd_data_dir }}"
-ETCD_LISTEN_PEER_URLS="http://{{ ansible_default_ipv4.address }}:2380"
-***************
-hostname={{ ansible_hostname }}
-ip={{ ansible_default_ipv4.address }}
-setvars={{ setvar }}
