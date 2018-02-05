@@ -1,0 +1,12 @@
+# etcd name
+etcd_name: etcd1
+# etcd data path
+etcd_data_dir: /var/lib/etcd/default.etcd 
+
+# etcd install on this host
+etcd_host: 172.16.7.58
+
+# etcd advertise client urls
+etcd_adv_cli_urls: http://0.0.0.0:2379
+
+flannel_network: 10.126.0.0/16

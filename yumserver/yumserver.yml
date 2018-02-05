@@ -1,0 +1,8 @@
+- hosts: yumserver
+  roles:
+  - yumserver
+  tags:
+  - yumserver
+  vars_files:
+    - group_vars/yum.yml
+

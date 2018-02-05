@@ -1,7 +1,7 @@
-k8slb: 10.0.15.40
-master1: 10.0.15.34
-master2: 10.0.15.35
-master3: 10.0.15.36
-clusterip: 10.240.0.1
+k8slb: 10.100.0.183
+master1: 10.100.0.180
+master2: 10.100.0.181
+master3: 10.100.0.182
+clusterip: 10.230.0.1
 
-fullk8slb: https://10.0.15.40:6443
+fullk8slb: https://10.100.0.183:6443

@@ -1,0 +1,17 @@
+#check if docker installd
+- name: check if docker-ce installed
+  command: rpm -q docker-ce
+  register: rpm_check
+- name: interrupt execution
+  fail: msg="check failed"
+  when: rpm_check.stdout.find('is not installed') != -1
+
+- file: path=/mnt/data state=directory
+- name: check if port
+  command: netstat -tulnp|grep ':{{ yumport }}'
+  register: rpm_check
+- name: interrupt execution
+  fail: msg="check failed"
+  when: rpm_check.stdout.find('is not installed') != -1
+
+netstat -tulnp|grep ':8880'

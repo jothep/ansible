@@ -1,0 +1,16 @@
+[two]
+localhost    setvar=etcd1
+172.16.7.59  setvar=etcd2
+
+[etcd]
+172.16.7.39
+172.16.7.40
+172.16.7.55
+
+#[mon]
+#172.16.7.59
+
+#[mon:vars]
+#ori=XX
+#des=YY
+

@@ -1,24 +1,24 @@
 ##certs
-k8slb: 10.0.15.40
-master1: 10.0.15.34
-master2: 10.0.15.35
-master3: 10.0.15.36
-clusterip: 10.240.0.1
-fullk8slb: https://10.0.15.40:6443
+k8slb: 10.100.0.183
+master1: 10.100.0.180
+master2: 10.100.0.181
+master3: 10.100.0.182
+clusterip: 10.230.0.1
+fullk8slb: https://10.100.0.183:6443
 if_etcd_refresh: false
 
 ##etcd
 etcd_data_dir: /var/lib/etcd/default.etcd 
-etcd_cluster: etcd01=https://10.0.15.34:2380,etcd02=https://10.0.15.35:2380,etcd03=https://10.0.15.36:2380
+etcd_cluster: etcd01=https://10.100.0.180:2380,etcd02=https://10.100.0.181:2380,etcd03=https://10.100.0.182:2380
 etcd_cluster_state: new
 etcd_cluster_name: etcd-cluster
-etcd_ep: https://10.0.15.34:2379,https://10.0.15.35:2379,https://10.0.15.36:2379
+etcd_ep: https://10.100.0.180:2379,https://10.100.0.181:2379,https://10.100.0.182:2379
 etcd_ca_file: /opt/ssl/etcd/ca.pem
 etcd_cert_file: /opt/ssl/etcd/kubernetes.pem
 etcd_key_file: /opt/ssl/etcd/kubernetes-key.pem 
 
 ##flannel
-flannel_network: 172.33.0.0/16
+flannel_network: 172.35.0.0/16
 #etcd_ep: https://10.0.15.34:2379,https://10.0.15.35:2379,https://10.0.15.36:2379
 flannel_etcd_prefix: /coreos.com/network/
 tsl_pass: --cert-file /opt/ssl/etcd/kubernetes.pem --key-file /opt/ssl/etcd/kubernetes-key.pem --ca-file /opt/ssl/etcd/ca.pem
@@ -32,7 +32,7 @@ kubelet_staticpod: --pod-manifest-path=/etc/kubernetes/manifests
 kubelet_priv: --allow-privileged=true
 #etcd_ep: https://10.0.15.34:2379,https://10.0.15.35:2379,https://10.0.15.36:2379
 pause3: dockerhub.xinzhentech.com/pause-amd64:3.0
-cluster_range: 10.231.0.0/16
+cluster_range: 10.230.0.0/16
 #fullk8slb: https://10.0.15.40:6443
 #etcd_ca_file: /opt/ssl/etcd/ca.pem
 #etcd_cert_file: /opt/ssl/etcd/kubernetes.pem
