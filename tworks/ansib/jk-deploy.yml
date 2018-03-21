@@ -1,0 +1,8 @@
+- hosts: deploy
+  gather_facts: no
+  roles:
+  - jk-deploy
+  tags:
+  - jk-deploy
+  vars_files:
+    - group_vars/all.yml

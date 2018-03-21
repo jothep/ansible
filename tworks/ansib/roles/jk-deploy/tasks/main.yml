@@ -1,0 +1,5 @@
+- name: mk path
+  file: path="{{ prevayler_path }}" state=directory mode=0755
+
+- name: deploy app
+  command: "docker run -tid --name=tomcatapp -p 8888:'{{ appport }}' --restart=always  -v /opt/data:'{{ prevayler_path }}' '{{ appbuild }}'"

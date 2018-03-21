@@ -1,0 +1,5 @@
+FROM {{ staticimage }}
+MAINTAINER {{ version }}
+#delete old war package
+#RUN rm -rf {{ staticpath }}{{ staticfile }}
+ADD {{ staticzip }} {{ staticpath }}

@@ -1,0 +1,24 @@
+- name: make sure path
+  file: path=/opt/build state=directory mode=0755
+- file: path=/opt/jenkins_home state=directory mode=0777
+
+- name: dockerfile to jenkins
+  copy: src=templates/dockerfile.jenkinsdoc dest=/opt/build/dockerfile.jenkinsdoc
+
+- name: build jenkins image
+  command: "docker build -f /opt/build/dockerfile.jenkinsdoc -t jenkinsdoc ."
+
+- name: initialize jenkins
+  docker:
+    image: jenkinsdoc
+    name: jenkinsrv
+    ports: 
+    - "8080:8080"
+    - "50000:50000"
+    state: started
+    privileged: yes
+    restart_policy: always
+    volumes:
+    - /opt/jenkins_home:/var/jenkins_home:rw
+    - /opt/build:/opt/build:rw
+    - /var/run/docker.sock:/var/run/docker.sock

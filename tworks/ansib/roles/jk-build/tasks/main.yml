@@ -1,0 +1,13 @@
+- name: make sure path
+  file: path={{ buildpath }} state=directory
+
+- name: cp dockerfile to jenkins server
+  template: src=templates/{{ appdf }} dest={{ buildpath }}/Dockerfile
+#- template: src=templates/{{ webdf }} dest={{ buildpath }}/{{ webdf }}
+
+- name: war file to build path
+  copy: src=templates/{{ javawar }} dest={{ buildpath }}
+
+#- name: zip file to build path
+#  copy: src=templates/{{ staticfile }} dest={{ buildpath }}
+

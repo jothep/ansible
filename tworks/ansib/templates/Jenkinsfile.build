@@ -1,0 +1,19 @@
+node {
+	stage('ready files') {
+		sh 'cp /opt/build/sample.war .'
+		sh 'cp /opt/build/Dockerfile .'
+
+    }
+	
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        docker.build("appwar")
+    }
+
+	stage('upload image') {
+	/* there save the image as tar, other way we can push image to docker-registry .		*/
+            sh 'docker save appwar > /opt/build/appwar.tar'
+    }
+}

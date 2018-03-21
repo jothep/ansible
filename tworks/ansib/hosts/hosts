@@ -1,0 +1,17 @@
+[docker]
+172.17.136.132:22 ansible_ssh_pass="QNMDhw"
+
+[jenkins]
+172.17.136.132:22 ansible_ssh_pass="QNMDhw"
+
+[deploy]
+172.17.136.132:22 ansible_ssh_pass="QNMDhw"
+
+[test-deploy]
+
+[staging-deploy]
+
+[prod-deploy]
+
+[test]
+172.17.136.132

@@ -1,0 +1,8 @@
+stage('ansible deploy'){
+        
+        
+        
+	withCredentials([usernamePassword(credentialsId: 'ansiSSH', passwordVariable: 'ansiSSHPassword', usernameVariable: 'ansiSSHUser')]) {
+          sh 'sshpass -p ${env.ansiSSHPassword} ssh ${env.ansiSSHUser}@172.17.136.128 "ansible-playbook -i /opt/tworks/ansib/hosts/hosts /opt/tworks/ansib/jk-deploy.yml -v"'
+	}
+	}

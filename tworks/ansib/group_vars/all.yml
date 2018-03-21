@@ -1,0 +1,20 @@
+jenkins_plugins: 
+
+appimage: tomcat:latest
+appbuild: appwar
+javawar: sample.war
+apppath: /usr/local/tomcat/webapps
+oldjavawar: xxx.war
+version: v1.0
+
+staticimage: tomcat:latest
+staticfile: a.jpg
+staticpath: /usr/local/tomcat/webapps
+staticzip: a.zip
+
+buildpath: /opt/build
+appdf: dockerfile.app
+webdf: dockerfile.web
+
+prevayler_path: /opt/prevayler
+appport: 8080

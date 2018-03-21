@@ -1,0 +1,8 @@
+node (label: 'ansible1'){
+
+    stage('ansible deploy'){
+
+          sh 'ansible-playbook -i /opt/tworks/ansib/hosts/hosts /opt/tworks/ansib/jk-deploy.yml -v'
+	
+	}
+}
