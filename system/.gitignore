@@ -1,0 +1,5 @@
+.vagrant
+.vscode
+*.retry
+.DS_Store
+secret.tfvars

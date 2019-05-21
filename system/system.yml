@@ -1,0 +1,9 @@
+## 
+- hosts: system
+  #gather_facts: no
+  roles:
+  - system
+  tags:
+  - system
+  vars_files:
+    - "{{ inventory_dir }}/group_vars/vars.yml"
